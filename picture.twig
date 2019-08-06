@@ -1,0 +1,72 @@
+{#
+{ src, webp = false, class='', lazy-load = false, lazy-image = '', media = ''  }
+#}
+{% macro source( args )  %}
+{% if args.webp %}
+<source
+    type="image/webp"
+    {% if args.media != '' %}
+        media="{{ args.media }}"
+    {% endif %}
+    {% if args.class != '' %}
+        class="{{ args.class }}"
+    {% endif %}
+    {% if args.src != '' and args.lazy-load == false %}
+        srcset="{{ args.src|towebp }}"
+    {% elseif args.src != '' and args.lazy-load == true %}
+        srcset="{{ args.lazy-image|towebp }}"
+        data-src="{{ args.src|towebp }}"
+    {% endif %}
+/>
+{% endif %}
+<source
+    {% if args.media != '' %}
+        media="{{ args.media }}"
+    {% endif %}
+    {% if args.class != '' %}
+        class="{{ args.class }}"
+    {% endif %}
+    {% if args.src != '' and args.lazy-load == false %}
+        srcset="{{ args.src }}"
+    {% elseif args.src != '' and args.lazy-load == true %}
+        srcset="{{ args.lazy-image }}"
+        data-srcset="{{ args.src }}"
+    {% endif %}
+/>
+{% endmacro %}
+{#
+{ src, webp = false, class='', lazy-load = false, lazy-image = '', media = ''  }
+#}
+{% macro img( args )  %}
+{% if args.webp %}
+<source
+    type="image/webp"
+    {% if args.media != '' %}
+        media="{{ args.media }}"
+    {% endif %}
+    {% if args.class != '' %}
+        class="{{ args.class }}"
+    {% endif %}
+    {% if args.src != '' and args.lazy-load == false %}
+        srcset="{{ args.src|towebp }}"
+    {% elseif args.src != '' and args.lazy-load == true %}
+        srcset="{{ args.lazy-image|towebp }}"
+        data-src="{{ args.src|towebp }}"
+    {% endif %}
+/>
+{% endif %}
+<img
+    {% if args.media != '' %}
+        media="{{ args.media }}"
+    {% endif %}
+    {% if args.class != '' %}
+        class="{{ args.class }}"
+    {% endif %}
+    {% if args.src != '' and args.lazy-load == false %}
+        src="{{ args.src }}"
+    {% elseif args.src != '' and args.lazy-load == true %}
+        src="{{ args.lazy-image }}"
+        data-src="{{ args.src }}"
+    {% endif %}
+/>
+{% endmacro %}
