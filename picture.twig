@@ -1,5 +1,5 @@
 {#
-{ src, webp = false, class='', lazy-load = false, lazy-image = '', media = ''  }
+{ src, webp = false, class='', lazy_load = false, lazy_image = '', media = ''  }
 #}
 {% macro source( args )  %}
 {% if args.webp %}
@@ -11,11 +11,11 @@
     {% if args.class != '' %}
         class="{{ args.class }}"
     {% endif %}
-    {% if args.src != '' and args.lazy-load == false %}
+    {% if args.src != '' and args.lazy_load == false %}
         srcset="{{ args.src|towebp }}"
-    {% elseif args.src != '' and args.lazy-load == true %}
-        srcset="{{ args.lazy-image|towebp }}"
-        data-src="{{ args.src|towebp }}"
+    {% elseif args.src != '' and args.lazy_load == true %}
+        srcset="{{ args.lazy_image|towebp ? args.lazy_image|towebp : '#' }}"
+        data-srcset="{{ args.src|towebp }}"
     {% endif %}
 />
 {% endif %}
@@ -26,17 +26,14 @@
     {% if args.class != '' %}
         class="{{ args.class }}"
     {% endif %}
-    {% if args.src != '' and args.lazy-load == false %}
-        srcset="{{ args.src }}"
-    {% elseif args.src != '' and args.lazy-load == true %}
-        srcset="{{ args.lazy-image }}"
-        data-srcset="{{ args.src }}"
+    {% if args.src != '' and args.lazy_load == false %}
+        srcset="{{ args.src|tojpg }}"
+    {% elseif args.src != '' and args.lazy_load == true %}
+        srcset="{{ args.lazy_image ? args.lazy_image|tojpg : '#' }}"
+        data-srcset="{{ args.src|tojpg }}"
     {% endif %}
 />
 {% endmacro %}
-{#
-{ src, webp = false, class='', lazy-load = false, lazy-image = '', media = ''  }
-#}
 {% macro img( args )  %}
 {% if args.webp %}
 <source
@@ -47,11 +44,11 @@
     {% if args.class != '' %}
         class="{{ args.class }}"
     {% endif %}
-    {% if args.src != '' and args.lazy-load == false %}
+    {% if args.src != '' and args.lazy_load == false %}
         srcset="{{ args.src|towebp }}"
-    {% elseif args.src != '' and args.lazy-load == true %}
-        srcset="{{ args.lazy-image|towebp }}"
-        data-src="{{ args.src|towebp }}"
+    {% elseif args.src != '' and args.lazy_load == true %}
+        srcset="{{ args.lazy_image ? args.lazy_image : '#' }}"
+        data-srcset="{{ args.src|towebp }}"
     {% endif %}
 />
 {% endif %}
@@ -59,14 +56,16 @@
     {% if args.media != '' %}
         media="{{ args.media }}"
     {% endif %}
+    
     {% if args.class != '' %}
         class="{{ args.class }}"
     {% endif %}
-    {% if args.src != '' and args.lazy-load == false %}
-        src="{{ args.src }}"
-    {% elseif args.src != '' and args.lazy-load == true %}
-        src="{{ args.lazy-image }}"
-        data-src="{{ args.src }}"
+
+    {% if args.src != '' and args.lazy_load == false %}
+        src="{{ args.src|tojpg }}"
+    {% elseif args.src != '' and args.lazy_load == true %}
+        src="{{ args.lazy_image ? args.lazy_image|tojpg : '#' }}"
+        data-src="{{ args.src|tojpg }}"
     {% endif %}
 />
 {% endmacro %}
