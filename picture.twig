@@ -1,71 +1,100 @@
 {#
-{ src, webp = false, class='', lazy_load = false, lazy_image = '', media = ''  }
+source tag
+src - img url 
+webp = false - should we also create webp - true / false  
+class - class names
+lazy_load = false - should the image be loaded with data-src/data-srcset variant
+lazy_image - the image that should be used until normal image is loaded
+media - media query
 #}
+
 {% macro source( args )  %}
-{% if args.webp %}
-<source
-    type="image/webp"
-    {% if args.media != '' %}
-        media="{{ args.media }}"
-    {% endif %}
-    {% if args.class != '' %}
-        class="{{ args.class }}"
-    {% endif %}
-    {% if args.src != '' and args.lazy_load == false %}
-        srcset="{{ args.src|towebp }}"
-    {% elseif args.src != '' and args.lazy_load == true %}
-        srcset="{{ args.lazy_image|towebp ? args.lazy_image|towebp : '#' }}"
-        data-srcset="{{ args.src|towebp }}"
-    {% endif %}
-/>
-{% endif %}
-<source
-    {% if args.media != '' %}
-        media="{{ args.media }}"
-    {% endif %}
-    {% if args.class != '' %}
-        class="{{ args.class }}"
-    {% endif %}
-    {% if args.src != '' and args.lazy_load == false %}
-        srcset="{{ args.src|tojpg }}"
-    {% elseif args.src != '' and args.lazy_load == true %}
-        srcset="{{ args.lazy_image ? args.lazy_image|tojpg : '#' }}"
-        data-srcset="{{ args.src|tojpg }}"
-    {% endif %}
-/>
-{% endmacro %}
-{% macro img( args )  %}
-{% if args.webp %}
-<source
-    type="image/webp"
-    {% if args.media != '' %}
-        media="{{ args.media }}"
-    {% endif %}
-    {% if args.class != '' %}
-        class="{{ args.class }}"
-    {% endif %}
-    {% if args.src != '' and args.lazy_load == false %}
-        srcset="{{ args.src|towebp }}"
-    {% elseif args.src != '' and args.lazy_load == true %}
-        srcset="{{ args.lazy_image ? args.lazy_image : '#' }}"
-        data-srcset="{{ args.src|towebp }}"
-    {% endif %}
-/>
-{% endif %}
-<img
-    {% if args.media != '' %}
-        media="{{ args.media }}"
-    {% endif %}
-    
-    {% if args.class != '' %}
-        class="{{ args.class }}"
+    {% import _self as picture_helper %}
+
+    {# webp version #}
+    {% if args.webp %}
+        <source
+            type="image/webp"
+            {{ picture_helper.media( args.media ) }}
+
+            {{ picture_helper.class( args.class ) }}
+            
+            {{ picture_helper.src( args.src, args.lazy_load, args.lazy_image, true, 'src' ) }}
+        />
     {% endif %}
 
-    {% if args.src != '' and args.lazy_load == false %}
-        src="{{ args.src|tojpg }}"
-    {% elseif args.src != '' and args.lazy_load == true %}
-        src="{{ args.lazy_image ? args.lazy_image|tojpg : '#' }}"
-        data-src="{{ args.src|tojpg }}"
+    {# default version #}
+    <source
+        {{ picture_helper.media( args.media ) }}
+
+        {{ picture_helper.class( args.class ) }}
+
+        {{ picture_helper.src( args.src, args.lazy_load, args.lazy_image, false, 'srcset' ) }}
+    />
+{% endmacro %}
+
+{#
+img tag
+src - img url 
+webp = false - should we also create webp - true / false  
+class - class names
+lazy_load = false - should the image be loaded with data-src/data-srcset variant
+lazy_image - the image that should be used until normal image is loaded
+media - media query
+#}
+{% macro img( args )  %}
+    {% import _self as picture_helper %}
+    
+    {# webp version #}
+    {% if args.webp %}
+        <source
+            type="image/webp"
+            {{ picture_helper.media( args.media ) }}
+
+            {{ picture_helper.class( args.class ) }}
+
+            {{ picture_helper.src( args.src, args.lazy_load, args.lazy_image, true, 'srcset' ) }}
+        />
     {% endif %}
-/>
+
+    {# default version #}
+    <img
+        {{ picture_helper.media( args.media ) }}
+        
+        {{ picture_helper.class( args.class ) }}
+
+        {{ picture_helper.src( args.src, args.lazy_load, args.lazy_image, false, 'src' ) }}
+    />
+{% endmacro %}
+
+
+{# helpers #}
+{% macro media( media ) %}
+    {% if media != '' %}
+        media="{{ media }}"
+    {% endif %}
+{% endmacro %}
+
+{% macro class( class ) %}
+    {% if class != '' %}
+        class="{{ class }}"
+    {% endif %}
+{% endmacro %}
+
+{% macro src( src, lazy_load = false, lazy_image = '#', webp, src_type = 'src' ) %}
+    {% if src != '' and lazy_load == false %}
+        {% if webp %}
+            {{ src_type }}="{{ src|towebp }}"
+        {% else %}
+            {{ src_type }}="{{ src }}"
+        {% endif %}
+    {% elseif src != '' and lazy_load == true %}
+        {% if webp %}
+            {{ src_type }}="{{ lazy_image|towebp }}"
+            data-{{ src_type }}="{{ src|towebp }}"
+        {% else %}
+            {{ src_type }}="{{ lazy_image }}"
+            data-{{ src_type }}="{{ src }}"
+        {% endif %}
+    {% endif %}
 {% endmacro %}
