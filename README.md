@@ -150,6 +150,7 @@ This macro has two functions that use same argument:
 - `lazy_load` - false - should the image be loaded with data-src/data-srcset variant
 - `lazy_image` - the image that should be used until normal image is loaded
 - `media` - media query
+- `force_jpg` - forces image to be converted to jpg. If you use webp argument than only non-webp image variant will be changed to jpg.
 
 ## Contributors
 Big thanks to [Monika](https://github.com/Montette) for being main tester and bug finder.
