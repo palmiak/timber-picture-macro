@@ -95,3 +95,25 @@ force_jpg - forces using jpg (if webp is set to true this only works for non-web
         {% endif %}
     {% endif %}
 {% endmacro %}
+
+{# BETA #}
+{% macro generator( args ) %}
+    {% import _self as picture_helper %}
+    {% for size in args.image_options %}
+        {% set options = { 
+                src: args.src|resize(size[1], size[2], size[3]),
+                media: size[0],
+                webp: args.webp,
+                class: args.class,
+                lazy_load: args.lazy_load,
+                lazy_image: args.lazy_image|resize(size[1], size[2], size[3]),
+                force_jpg: args.force_jpg
+            }  
+        %}
+        {% if loop.last == false %}
+            {{ picture_helper.source( options ) }}
+        {% else %}
+           {{ picture_helper.img( options ) }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
