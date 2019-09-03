@@ -6,31 +6,13 @@ class - class names
 lazy_load = false - should the image be loaded with data-src/data-srcset variant
 lazy_image - the image that should be used until normal image is loaded
 media - media query
+force_jpg - forces using jpg (if webp is set to true this only works for non-webp image)
 #}
 
 {% macro source( args )  %}
     {% import _self as picture_helper %}
 
-    {# webp version #}
-    {% if args.webp %}
-        <source
-            type="image/webp"
-            {{ picture_helper.media( args.media ) }}
-
-            {{ picture_helper.class( args.class ) }}
-            
-            {{ picture_helper.src( args.src, args.lazy_load, args.lazy_image, true, 'src' ) }}
-        />
-    {% endif %}
-
-    {# default version #}
-    <source
-        {{ picture_helper.media( args.media ) }}
-
-        {{ picture_helper.class( args.class ) }}
-
-        {{ picture_helper.src( args.src, args.lazy_load, args.lazy_image, false, 'srcset' ) }}
-    />
+    {{ picture_helper.wrapper( args, 'source' ) }}
 {% endmacro %}
 
 {#
@@ -41,10 +23,18 @@ class - class names
 lazy_load = false - should the image be loaded with data-src/data-srcset variant
 lazy_image - the image that should be used until normal image is loaded
 media - media query
+force_jpg - forces using jpg (if webp is set to true this only works for non-webp image)
 #}
 {% macro img( args )  %}
     {% import _self as picture_helper %}
     
+    {{ picture_helper.wrapper( args, 'img' ) }}
+{% endmacro %}
+
+
+{# helpers #}
+{% macro wrapper( args, type ) %}
+    {% import _self as picture_helper %}
     {# webp version #}
     {% if args.webp %}
         <source
@@ -52,23 +42,21 @@ media - media query
             {{ picture_helper.media( args.media ) }}
 
             {{ picture_helper.class( args.class ) }}
-
+            
             {{ picture_helper.src( args.src, args.lazy_load, args.lazy_image, true, 'srcset' ) }}
         />
     {% endif %}
 
     {# default version #}
-    <img
+    <{{ type }}
         {{ picture_helper.media( args.media ) }}
-        
+
         {{ picture_helper.class( args.class ) }}
 
-        {{ picture_helper.src( args.src, args.lazy_load, args.lazy_image, false, 'src' ) }}
+        {{ picture_helper.src( args.src, args.lazy_load, args.lazy_image, false, type == 'img' ? 'src' : 'srcset', args.force_jpg ) }}
     />
 {% endmacro %}
 
-
-{# helpers #}
 {% macro media( media ) %}
     {% if media != '' %}
         media="{{ media }}"
@@ -81,20 +69,29 @@ media - media query
     {% endif %}
 {% endmacro %}
 
-{% macro src( src, lazy_load = false, lazy_image = '#', webp, src_type = 'src' ) %}
+{% macro src( src, lazy_load = false, lazy_image = '#', webp, src_type = 'src', force_jpg ) %}
     {% if src != '' and lazy_load == false %}
         {% if webp %}
             {{ src_type }}="{{ src|towebp }}"
         {% else %}
-            {{ src_type }}="{{ src }}"
+            {% if force_jpg %}
+                {{ src_type }}="{{ src|tojpg }}"
+            {% else %}
+                {{ src_type }}="{{ src }}"
+            {% endif %}
         {% endif %}
     {% elseif src != '' and lazy_load == true %}
         {% if webp %}
             {{ src_type }}="{{ lazy_image|towebp }}"
             data-{{ src_type }}="{{ src|towebp }}"
         {% else %}
-            {{ src_type }}="{{ lazy_image }}"
-            data-{{ src_type }}="{{ src }}"
+            {% if force_jpg %}
+                {{ src_type }}="{{ lazy_image }}"
+                data-{{ src_type }}="{{ src|tojpg }}"
+            {% else %}
+                {{ src_type }}="{{ lazy_image }}"
+                data-{{ src_type }}="{{ src }}"
+            {% endif %}
         {% endif %}
     {% endif %}
 {% endmacro %}
