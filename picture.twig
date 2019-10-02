@@ -1,7 +1,7 @@
 {#
-source tag
-src - img url 
-webp = false - should we also create webp - true / false  
+source_ - source tag
+src - img url
+webp = false - should we also create webp - true / false
 class - class names
 lazy_load = false - should the image be loaded with data-src/data-srcset variant
 lazy_image - the image that should be used until normal image is loaded
@@ -9,16 +9,16 @@ media - media query
 force_jpg - forces using jpg (if webp is set to true this only works for non-webp image)
 #}
 
-{% macro source( args )  %}
+{% macro source_( args )  %}
     {% import _self as picture_helper %}
 
-    {{ picture_helper.wrapper( args, 'source' ) }}
+    {{ picture_helper.wrapper( args, 'source_' ) }}
 {% endmacro %}
 
 {#
 img tag
-src - img url 
-webp = false - should we also create webp - true / false  
+src - img url
+webp = false - should we also create webp - true / false
 class - class names
 lazy_load = false - should the image be loaded with data-src/data-srcset variant
 lazy_image - the image that should be used until normal image is loaded
@@ -27,7 +27,7 @@ force_jpg - forces using jpg (if webp is set to true this only works for non-web
 #}
 {% macro img( args )  %}
     {% import _self as picture_helper %}
-    
+
     {{ picture_helper.wrapper( args, 'img' ) }}
 {% endmacro %}
 
@@ -42,7 +42,7 @@ force_jpg - forces using jpg (if webp is set to true this only works for non-web
             {{ picture_helper.media( args.media ) }}
 
             {{ picture_helper.class( args.class ) }}
-            
+
             {{ picture_helper.src( args.src, args.lazy_load, args.lazy_image, true, 'srcset' ) }}
         />
     {% endif %}
@@ -100,7 +100,7 @@ force_jpg - forces using jpg (if webp is set to true this only works for non-web
 {% macro generator( args ) %}
     {% import _self as picture_helper %}
     {% for size in args.image_options %}
-        {% set options = { 
+        {% set options = {
                 src: args.src|resize(size[1], size[2], size[3]),
                 media: size[0],
                 webp: args.webp,
@@ -108,10 +108,10 @@ force_jpg - forces using jpg (if webp is set to true this only works for non-web
                 lazy_load: args.lazy_load,
                 lazy_image: args.lazy_image|resize(size[1], size[2], size[3]),
                 force_jpg: args.force_jpg
-            }  
+            }
         %}
         {% if loop.last == false %}
-            {{ picture_helper.source( options ) }}
+            {{ picture_helper.source_( options ) }}
         {% else %}
            {{ picture_helper.img( options ) }}
         {% endif %}
